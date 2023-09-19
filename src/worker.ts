@@ -8,9 +8,10 @@
  * Learn more at https://developers.cloudflare.com/workers/
  */
 
-export default {
-  async fetch(request, env, ctx) {
-    
-    return new Response('Hello World!');
-  },
+const handler: ExportedHandler = {
+	async fetch(request, env, ctx) {
+		return new Response('Hello World!');
+	},
 };
+
+export default handler;
