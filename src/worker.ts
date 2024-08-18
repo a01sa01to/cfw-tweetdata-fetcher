@@ -1,13 +1,3 @@
-/**
- * Welcome to Cloudflare Workers! This is your first worker.
- *
- * - Run "npm run dev" in your terminal to start a development server
- * - Open a browser tab at http://localhost:8787/ to see your worker in action
- * - Run "npm run deploy" to publish your worker
- *
- * Learn more at https://developers.cloudflare.com/workers/
- */
-
 const getToken = (id: string) => ((Number(id) / 1e15) * Math.PI).toString(36).replace(/(0+|\.)/g, '');
 
 const handler: ExportedHandler = {
@@ -27,6 +17,17 @@ const handler: ExportedHandler = {
 
 		if (id.length > 40 || !/^[0-9]+$/.test(id)) {
 			return new Response('Bad Request', { status: 400 });
+		}
+
+		if (request.method === "OPTIONS") {
+			return new Response('OK', {
+				headers: {
+					'Access-Control-Allow-Origin': '*',
+					'Access-Control-Allow-Methods': 'GET,OPTIONS',
+					'Access-Control-Allow-Headers': 'Content-Type',
+					'Access-Control-Max-Age': '31536000',
+				},
+			});
 		}
 
 		// ref: https://github.com/vercel/react-tweet/blob/main/packages/react-tweet/src/api/get-tweet.ts
@@ -61,12 +62,25 @@ const handler: ExportedHandler = {
 		});
 
 		if (res.status !== 200) {
-			return new Response(res.statusText, { status: res.status });
+			return new Response(res.statusText, {
+				status: res.status,
+				headers: {
+					'Content-Type': 'application/json;charset=UTF-8',
+					'Access-Control-Allow-Origin': '*',
+					'Access-Control-Allow-Methods': 'GET,OPTIONS',
+					'Access-Control-Allow-Headers': 'Content-Type',
+					'Access-Control-Max-Age': '1',
+				},
+			});
 		}
 
 		return new Response(JSON.stringify(await res.json()), {
 			headers: {
-				'content-type': 'application/json;charset=UTF-8',
+				'Content-Type': 'application/json;charset=UTF-8',
+				'Access-Control-Allow-Origin': '*',
+				'Access-Control-Allow-Methods': 'GET,OPTIONS',
+				'Access-Control-Allow-Headers': 'Content-Type',
+				'Access-Control-Max-Age': '31536000',
 			},
 		});
 	},
